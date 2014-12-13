@@ -10,6 +10,12 @@ namespace ShellViaCSharp
     {
         static void Main(string[] args)
         {
+            Shell shell = new Shell();
+
+            ShellCode hr = shell.Run();
+
+            Console.WriteLine("Shell Exited with code {0}", hr.ToString());
+            Console.ReadKey();
         }
     }
 }
