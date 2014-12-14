@@ -11,7 +11,6 @@ namespace ShellViaCSharp
         public Env()
         {
             home_ = @"e:\";
-            dirHistory_ = new List<string>();
             CurrentDirectory = home_;
         }
 
@@ -29,15 +28,9 @@ namespace ShellViaCSharp
             }
         }
         
-        public List<string> DirectoryHistory
-        {
-            get
-            {
-                return dirHistory_;
-            }
-        }
+
 
         private readonly string home_;
-        private List<string> dirHistory_;
+        
     }
 }

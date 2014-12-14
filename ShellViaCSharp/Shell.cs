@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ShellViaCSharp
 {
+
     class CodeAndMessage
     {
         public static CodeAndMessage Default = new CodeAndMessage(ShellCode.OK, null);
@@ -79,7 +80,6 @@ namespace ShellViaCSharp
             string input;
             CmdAndArgs cmdAndArgs;
             CodeAndMessage hr = CodeAndMessage.Default;
-
             while (true)
             {
 
@@ -166,8 +166,10 @@ namespace ShellViaCSharp
         }
         private ReturnCode InitCommands()
         {
-            commands_.Add("cd", new CdCommand());
-            commands_.Add("pwd", new PwdCommand());
+            foreach(var cmd in new DerivedClassEnumerator<Command>())
+            {
+                commands_.Add(cmd.CommandName, cmd);
+            }
 
             return ReturnCode.OK;
         }

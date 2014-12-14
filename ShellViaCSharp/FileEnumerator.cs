@@ -8,22 +8,57 @@ using System.IO;
 
 namespace ShellViaCSharp
 {
+    class FileEnumeratorArgs
+    {
+
+        public FileEnumeratorArgs()
+        {
+            ShowFile = true;
+            ShowDir = true;
+            Recursive = false;
+            Deep = 0;
+            Filter = null;
+        }
+
+        public bool ShowFile
+        {
+            get;
+            set;
+        }
+        public bool ShowDir
+        {
+            get;
+            set;
+        }
+        public bool Recursive
+        {
+            get;
+            set;
+        }
+        public int Deep
+        {
+            get;
+            set;
+        }
+        public string Filter
+        {
+            get;
+            set;
+        }
+    }
     class FileEnumerator: IEnumerable<string>
     {
-        private string rootDirectory_;
-        private bool recusive_;
-        private int deep_;
-        private string filter_;
+        FileEnumeratorArgs args_;
+        string rootDirectory_;
 
-        public FileEnumerator(string root, bool recusive, int deep, string filter = null)
+        public FileEnumerator(string root, FileEnumeratorArgs args)
         {
             rootDirectory_ = root;
-            recusive_ = recusive;
-
-            //deep == 0 recusive till the end
-            deep_ = (deep < 0) ? 1 : deep;
-
-            filter_ = filter;
+            args_ = args;
+            if(args_.Deep < 0)
+            {
+                args_.Deep = 1;
+            }
         }
 
         public IEnumerator<string> GetEnumerator()
@@ -38,7 +73,7 @@ namespace ShellViaCSharp
 
         private IEnumerator<string> DirectoryWalker(string directory, int layer)
         {
-            if(deep_ > 0 && layer >= deep_)
+            if(args_.Deep > 0 && layer >= args_.Deep)
             {
                 yield break;
             }
@@ -46,13 +81,13 @@ namespace ShellViaCSharp
             IEnumerable<string> dir;
             try
             {
-                if (filter_ == null)
+                if (args_.Filter == null)
                 {
                     dir = Directory.EnumerateFiles(directory);
                 }
                 else
                 {
-                    dir = Directory.EnumerateFiles(directory, filter_);
+                    dir = Directory.EnumerateFiles(directory, args_.Filter);
                 }
             }
             catch(Exception)
@@ -60,12 +95,22 @@ namespace ShellViaCSharp
                 yield break ;
             }
             
+            //show subdirectory names first
+            if(args_.ShowDir)
+            {
+                foreach(string name in Directory.EnumerateDirectories(directory))
+                {
+                    yield return name;
+                }
+            }
+
             foreach(string filename in dir)
             {
                 yield return filename;
             }
 
-            if(recusive_ && ((deep_ == 0) ||((layer+1) <= deep_)))
+
+            if(args_.Recursive && ((args_.Deep == 0) ||((layer+1) <= args_.Deep )))
             {
                 foreach(string dirname in Directory.EnumerateDirectories(directory))
                 {

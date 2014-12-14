@@ -6,13 +6,18 @@ using System.Threading.Tasks;
 
 namespace ShellViaCSharp
 {
-    class Command
+    abstract class Command
     {
         public Command()
         {
 
         }
 
+        public string CommandName
+        {
+            get;
+            protected set;
+        }
         public virtual CodeAndMessage Process(string args, ref Env env)
         {
             return new CodeAndMessage(ShellCode.OK, null);
