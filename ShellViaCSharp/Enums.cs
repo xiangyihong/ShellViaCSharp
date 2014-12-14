@@ -9,12 +9,14 @@ namespace ShellViaCSharp
     enum ShellCode
     {
         OK,
+        NotAuthorized,
+        NotExist,
     }
 
     enum ReturnCode
     {
         OK,
-
+        
         InValid,
     }
 }

@@ -6,6 +6,34 @@ using System.Threading.Tasks;
 
 namespace ShellViaCSharp
 {
+    class CodeAndMessage
+    {
+        public static CodeAndMessage Default = new CodeAndMessage(ShellCode.OK, null);
+
+        public ShellCode Code
+        {
+            get
+            {
+                return code_;
+            }
+        }
+        public string Message
+        {
+            get
+            {
+                return message_;
+            }
+        }
+
+        public CodeAndMessage(ShellCode c, string m)
+        {
+            code_ = c;
+            message_ = m;
+        }
+
+        private readonly ShellCode code_;
+        private readonly string message_;
+    }
     sealed class Shell
     {
         private class CmdAndArgs
@@ -50,9 +78,11 @@ namespace ShellViaCSharp
         {
             string input;
             CmdAndArgs cmdAndArgs;
-            ShellCode hr = ShellCode.OK;
+            CodeAndMessage hr = CodeAndMessage.Default;
+
             while (true)
             {
+
                 input = Console.ReadLine();
                 cmdAndArgs = ParseInput(input);
 
@@ -60,7 +90,7 @@ namespace ShellViaCSharp
                 //only use if since only "quit" is supported
                 if (cmdAndArgs.Cmd == "quit")
                 {
-                    return hr;
+                    return hr.Code;
                 }
 
                 if (userAlias_.ContainsKey(cmdAndArgs.Cmd))
@@ -71,7 +101,11 @@ namespace ShellViaCSharp
 
                 if (commands_.ContainsKey(cmdAndArgs.Cmd))
                 {
-                   hr = commands_[cmdAndArgs.Cmd].Process(cmdAndArgs.Args, ref env_);
+                    hr = commands_[cmdAndArgs.Cmd].Process(cmdAndArgs.Args, ref env_);
+                    if(hr.Code != ShellCode.OK && hr.Message != null)
+                    {
+                        Console.WriteLine(hr.Message);
+                    }
                 }
                 else
                 {
@@ -89,7 +123,7 @@ namespace ShellViaCSharp
             if(inputString != null)
             {
                 string s = RemoveExtraSpace(inputString);
-                //args are not supported currently
+                
                 if (s.Length > 0)
                 {
                     int index = s.IndexOf(' ');
@@ -98,6 +132,7 @@ namespace ShellViaCSharp
                         index = s.Length;
                     }
                     cmd = s.Substring(0, index);
+                    args = s.Substring(index);
                 }
             }
             
@@ -131,6 +166,9 @@ namespace ShellViaCSharp
         }
         private ReturnCode InitCommands()
         {
+            commands_.Add("cd", new CdCommand());
+            commands_.Add("pwd", new PwdCommand());
+
             return ReturnCode.OK;
         }
 

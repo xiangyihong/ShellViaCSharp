@@ -57,7 +57,6 @@ namespace ShellViaCSharp
         private IEnumerator<OptionAndValue> ParseArgs()
         {
             int n = args_.Length;
-            bool hasOneSlash = false;
             int index = 0;
 
             string option;
@@ -66,8 +65,8 @@ namespace ShellViaCSharp
             while(index < n)
             {
                 //get option
-                string word = string.Empty;
-                int nextIndex = ParseNextWord(args_, index, ref word);
+                string word;
+                int nextIndex = ParseNextWord(args_, index, out word);
 
                 if(word == string.Empty)
                 {
@@ -84,23 +83,18 @@ namespace ShellViaCSharp
 
                 //option
 
-                //something must be wrong
-                //options like "-a" take at lease two chars
-                if(word.Length < 2)
-                {
-                    yield break;
-                }
 
-                //only for short option style
-                if(word.Length == 2)
+                //for situations like "-a" "-" "--"
+                if(word.Length <= 2)
                 {
-                    //not start with '-' or the word is "--"
-                    if(word[0] != '-' || word[1] == '-')
+                    int optionIndex = 0;
+                    
+                    if(word.Length > 1 && word[1] != '-')
                     {
-                        yield break;
+                        optionIndex = 1;
                     }
 
-                    option = word.Substring(1, 1);
+                    option = word.Substring(optionIndex, word.Length - optionIndex);
 
                     nextIndex = TryGetValue(args_, nextIndex, out value);
                     yield return new OptionAndValue(option, value);
@@ -147,7 +141,7 @@ namespace ShellViaCSharp
         {
             int boundry = start;
             string tryValue = string.Empty;
-            boundry = ParseNextWord(args_, start, ref tryValue);
+            boundry = ParseNextWord(args_, start, out tryValue);
             if (tryValue == string.Empty || tryValue[0] == '-')
             {
                 value = null;
@@ -161,12 +155,8 @@ namespace ShellViaCSharp
             return boundry;
         }
 
-        private int ParseNextWord(string s, int start, ref string word)
+        private int ParseNextWord(string s, int start, out string word)
         {
-            if(word == null)
-            {
-                return start;
-            }
             int n = s.Length;
 
             //parse preceding white space

@@ -8,15 +8,36 @@ namespace ShellViaCSharp
 {
     sealed class Env
     {
+        public Env()
+        {
+            home_ = @"e:\";
+            dirHistory_ = new List<string>();
+            CurrentDirectory = home_;
+        }
+
         public string CurrentDirectory
         {
             get;
             set;
         }
 
+        public string HomeDirectory
+        {
+            get
+            {
+                return home_;
+            }
+        }
+        
+        public List<string> DirectoryHistory
+        {
+            get
+            {
+                return dirHistory_;
+            }
+        }
 
-        //hard code tempraly
         private readonly string home_;
-
+        private List<string> dirHistory_;
     }
 }

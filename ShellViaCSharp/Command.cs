@@ -13,9 +13,9 @@ namespace ShellViaCSharp
 
         }
 
-        public virtual ShellCode Process(string args, ref Env env)
+        public virtual CodeAndMessage Process(string args, ref Env env)
         {
-            return ShellCode.OK;
+            return new CodeAndMessage(ShellCode.OK, null);
         }
     }
 }
