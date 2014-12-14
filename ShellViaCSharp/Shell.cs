@@ -71,7 +71,7 @@ namespace ShellViaCSharp
 
                 if (commands_.ContainsKey(cmdAndArgs.Cmd))
                 {
-                    commands_[cmdAndArgs.Cmd].Process(cmdAndArgs.Args, ref env_);
+                   hr = commands_[cmdAndArgs.Cmd].Process(cmdAndArgs.Args, ref env_);
                 }
                 else
                 {

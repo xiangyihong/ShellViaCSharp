@@ -8,6 +8,15 @@ namespace ShellViaCSharp
 {
     sealed class Env
     {
+        public string CurrentDirectory
+        {
+            get;
+            set;
+        }
+
+
+        //hard code tempraly
+        private readonly string home_;
 
     }
 }
